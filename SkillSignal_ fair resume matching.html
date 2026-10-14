@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>SkillSignal: fair resume matching</title>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{box-sizing:border-box;padding-bottom:env(safe-area-inset-bottom,0px);--bg:#f4f6fb;--card:#fff;--ink:#0f1b33;--mut:#5d6b85;--line:#e1e6f0;--p:#2540d9;--p2:#e8ecff;--hero:#0f1b33;--heroink:#fff;--ok:#0e8a6a;--okbg:#def6ee;--warn:#fff1d6;--wt:#8a5300;--bad:#c8372d}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0b1220;--card:#131c30;--ink:#e9eefb;--mut:#9aa7c2;--line:#24304b;--p:#7b93ff;--p2:#1a2547;--hero:#070d19;--ok:#4fd8b0;--okbg:#10352d;--warn:#3a2d10;--wt:#f5c26b;--bad:#ff8277}}
+:root[data-theme="dark"]{--bg:#0b1220;--card:#131c30;--ink:#e9eefb;--mut:#9aa7c2;--line:#24304b;--p:#7b93ff;--p2:#1a2547;--hero:#070d19;--ok:#4fd8b0;--okbg:#10352d;--warn:#3a2d10;--wt:#f5c26b;--bad:#ff8277}
+*{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:80px}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 Manrope,system-ui,-apple-system,Segoe UI,sans-serif}
+.c{max-width:1040px;margin:0 auto;padding:0 20px}
+nav{position:sticky;top:0;z-index:5;padding-top:env(safe-area-inset-top,0px);background:var(--hero);color:var(--heroink)}
+nav .c{display:flex;align-items:center;justify-content:space-between;height:60px}
+.logo{font-weight:800;font-size:19px;display:flex;align-items:center;gap:9px;color:inherit;text-decoration:none}
+.logo i{width:26px;height:26px;border-radius:8px;background:var(--p);display:inline-grid;place-items:center}
+nav a.l{color:#c6d0ea;text-decoration:none;font-size:14px;margin-left:20px}nav a.l:hover{color:#fff}
+.hero{background:var(--hero);color:var(--heroink);padding:56px 0 70px}
+.hero .c{display:grid;grid-template-columns:1.1fr .9fr;gap:40px;align-items:center}
+h1{font-size:46px;line-height:1.1;margin:0 0 16px;font-weight:800;letter-spacing:-1.2px}
+.hero p{color:#b9c5e3;font-size:18px;max-width:480px;margin:0 0 26px}
+.btn{display:inline-block;background:var(--p);color:#fff;border:0;border-radius:10px;padding:14px 26px;font:inherit;font-weight:700;font-size:16px;cursor:pointer;text-decoration:none}
+.hero .btn{background:#fff;color:#0f1b33}
+.btn:focus-visible,.pill:focus-visible,textarea:focus-visible,.tg:focus-visible{outline:3px solid #7b93ff;outline-offset:2px}
+.demo{background:var(--card);color:var(--ink);border-radius:16px;padding:22px;box-shadow:0 20px 50px rgba(0,0,0,.35)}
+.demo small{color:var(--mut)}
+.row{margin:14px 0}.row .t{display:flex;justify-content:space-between;font-weight:700;font-size:14px}
+.tr{height:12px;border-radius:6px;background:var(--line);margin-top:6px;overflow:hidden}.tr b{display:block;height:100%;border-radius:6px}
+.tag{margin-top:14px;padding:10px 12px;border-radius:10px;background:var(--warn);color:var(--wt);font-size:14px;font-weight:600}
+section{padding:64px 0}h2{font-size:30px;margin:0 0 8px;letter-spacing:-.5px;line-height:1.2}
+.sub{color:var(--mut);margin:0 0 28px;max-width:560px}
+.g3{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:22px}
+.ic{width:42px;height:42px;border-radius:12px;background:var(--p2);color:var(--p);display:grid;place-items:center;font-weight:800;margin-bottom:12px}
+.card h3{margin:0 0 6px;font-size:18px}.card p{margin:0;color:var(--mut);font-size:15px}
+.tool{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:24px}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+label.h{font-weight:700;font-size:14px;display:block;margin-bottom:6px}
+textarea{width:100%;height:190px;border:1px solid var(--line);border-radius:10px;padding:12px;font:inherit;font-size:14px;background:var(--bg);color:var(--ink);resize:vertical}
+.pill{border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:999px;padding:5px 13px;font:inherit;font-size:13px;cursor:pointer;margin:0 6px 8px 0}
+.pill:hover{border-color:var(--p)}
+.res{display:grid;grid-template-columns:200px 1fr;gap:26px;align-items:center;margin-top:22px;padding-top:22px;border-top:1px solid var(--line)}
+.gauge{position:relative;width:180px;height:180px;margin:auto}.gauge svg{transform:rotate(-90deg)}
+.gauge div{position:absolute;inset:0;display:grid;place-content:center;text-align:center}
+.gauge b{font-size:48px;line-height:1;font-weight:800}.gauge span{font-size:12px;color:var(--mut)}
+.chip{display:inline-block;padding:5px 12px;border-radius:999px;margin:3px 4px 3px 0;font-size:14px;border:1px solid var(--line);color:var(--mut)}
+.chip.ok{background:var(--okbg);color:var(--ok);border-color:transparent;font-weight:700}
+.warn{background:var(--warn);color:var(--wt);padding:12px 14px;border-radius:10px;margin-top:12px;font-size:14px}
+.hid{display:none}
+.stats{background:var(--hero);color:#fff;border-radius:20px;padding:40px 30px;display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:26px}
+.stats b{font-size:44px;font-weight:800;display:block;line-height:1.1;letter-spacing:-1px}.stats span{color:#b9c5e3;font-size:14px}
+footer{padding:30px 0 50px;color:var(--mut);font-size:13px;border-top:1px solid var(--line)}
+.tg{background:none;border:1px solid #3a4766;color:#c6d0ea;border-radius:8px;padding:5px 10px;font:inherit;font-size:13px;cursor:pointer;margin-left:18px}
+.pill.on{background:var(--p);color:#fff;border-color:var(--p)}
+mark{background:var(--okbg);color:var(--ok);border-radius:3px;padding:0 3px;font-weight:700}
+.lb{position:relative}.lr{position:absolute;left:0;right:0;height:32px;display:grid;grid-template-columns:28px 140px 1fr 74px;gap:8px;align-items:center;font-size:13px;font-weight:600;cursor:pointer;border-radius:8px;transition:transform .8s cubic-bezier(.3,.8,.3,1)}
+.lr:hover{background:var(--p2)}.lr:focus-visible{outline:2px solid var(--p)}.lr .tr{margin:0;height:10px}.lr .tr b{transition:width .8s,background .4s}.lr .rk{color:var(--mut);text-align:center}
+@media(max-width:760px){.hero .c,.cols,.res{grid-template-columns:1fr}h1{font-size:34px}nav a.l{display:none}section{padding:44px 0}}
+</style></head><body>
+<nav><div class="c"><a class="logo" href="#top"><i><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><path d="M2 11a8 8 0 0 1 12 0M5 12.5a4 4 0 0 1 6 0"/><circle cx="8" cy="14" r="1" fill="#fff"/></svg></i>SkillSignal</a>
+<div><a class="l" href="#how">How it works</a><a class="l" href="#try">Try it</a><a class="l" href="#rank">Leaderboard</a><a class="l" href="#build">Build a candidate</a><a class="l" href="#findings">Findings</a><button class="tg" id="tg">Theme</button></div></div></nav>
+
+<header class="hero" id="top"><div class="c">
+<div><h1>Does how you write change how you rank?</h1>
+<p>SkillSignal matches resumes to jobs with AI, and shows when two people with the same skills get very different scores just because of their wording.</p>
+<a class="btn" href="#try">Try it yourself</a></div>
+<div class="demo"><small>Same candidate, same skills</small>
+<div class="row"><div class="t"><span>Short resume</span><span id="h1s"></span></div><div class="tr"><b id="h1b" style="background:var(--ok)"></b></div></div>
+<div class="row"><div class="t"><span>Wordy resume</span><span id="h2s"></span></div><div class="tr"><b id="h2b" style="background:var(--bad)"></b></div></div>
+<div class="tag">Score dropped, but the skills did not change.</div></div>
+</div></header>
+
+<section id="how"><div class="c"><h2>How it works</h2><p class="sub">Three simple steps, from resume to match score.</p>
+<div class="g3">
+<div class="card"><div class="ic">1</div><h3>Read both texts</h3><p>The AI takes a job ad and a resume, and cleans the text so only meaningful words are left.</p></div>
+<div class="card"><div class="ic">2</div><h3>Compare and score</h3><p>Two methods compare them: one counts shared words, the other understands meaning. Result: a score out of 100.</p></div>
+<div class="card"><div class="ic">3</div><h3>Show the skills</h3><p>The report lists which required skills were found and which are missing, so a recruiter can double check.</p></div>
+</div></div></section>
+
+<section id="try" style="padding-top:0"><div class="c"><h2>Try it yourself</h2><p class="sub">Paste any job ad and resume, or use the examples, then press Check match.</p>
+<div class="tool"><div class="cols">
+<div><label class="h" for="job">Job ad</label><textarea id="job"></textarea></div>
+<div><label class="h" for="res">Resume</label><div><button class="pill" id="e1">Example: short resume</button><button class="pill" id="e2">Example: wordy resume</button></div><textarea id="res" style="height:150px"></textarea></div></div>
+<div style="margin-top:16px"><button class="btn" id="go">Check match</button></div>
+<div class="res hid" id="out">
+<div class="gauge"><svg width="180" height="180" viewBox="0 0 180 180"><circle cx="90" cy="90" r="76" fill="none" stroke="var(--line)" stroke-width="14"/><circle id="arc" cx="90" cy="90" r="76" fill="none" stroke="var(--p)" stroke-width="14" stroke-linecap="round" stroke-dasharray="477.5" stroke-dashoffset="477.5" style="transition:stroke-dashoffset .6s"/></svg><div><b id="sc">0</b><span>out of 100</span></div></div>
+<div><div id="say" style="font-weight:700;font-size:18px;margin-bottom:10px"></div>
+<div class="sub" style="margin:0 0 4px;font-size:13px">Skills found</div><div id="ok"></div>
+<div class="sub" style="margin:10px 0 4px;font-size:13px">Skills not found</div><div id="no"></div>
+<div class="warn hid" id="warn"></div>
+<div class="sub" style="margin:14px 0 4px;font-size:13px">Words the AI matched with the job ad</div><div id="hl" style="font-size:14px;line-height:1.9"></div></div></div>
+</div></div></section>
+
+<section id="rank" style="padding-top:0"><div class="c"><h2>Watch the ranking flip</h2><p class="sub">15 candidates ranked for one job. Tap any candidate to rewrite their resume in wordy style, with exactly the same skills, and watch where they land.</p>
+<div class="tool"><div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:space-between;margin-bottom:14px"><div><button class="pill on" data-s="0">All short style</button><button class="pill" data-s="1">All wordy style</button></div><div><button class="pill on" data-m="t">Word-matching AI</button><button class="pill" data-m="e">Meaning AI</button></div></div>
+<div class="lb" id="lb" style="height:480px"></div><p id="lbn" style="margin:14px 0 0;font-weight:700"></p></div></div></section>
+
+<section id="build" style="padding-top:0"><div class="c"><h2>Build your own candidate</h2><p class="sub">Pick the skills your candidate really has, then choose how they write it. See how many skills the AI actually notices.</p>
+<div class="tool"><div class="cols"><div>
+<label class="h">Skills this person has (tap to add or remove)</label><div id="bs"></div>
+<label class="h" style="margin-top:14px">Writing style</label><div><button class="pill on" data-b="0">Short and direct</button><button class="pill" data-b="1">Long and wordy</button></div>
+<label class="h" style="margin-top:14px">Resume the AI reads</label><div id="bt" class="card" style="padding:12px;font-size:14px;color:var(--mut)"></div></div>
+<div style="text-align:center"><div class="gauge"><svg width="180" height="180" viewBox="0 0 180 180"><circle cx="90" cy="90" r="76" fill="none" stroke="var(--line)" stroke-width="14"/><circle id="barc" cx="90" cy="90" r="76" fill="none" stroke="var(--p)" stroke-width="14" stroke-linecap="round" stroke-dasharray="477.5" stroke-dashoffset="477.5" style="transition:stroke-dashoffset .6s"/></svg><div><b id="bsc">0</b><span>match score</span></div></div>
+<p id="bv" style="font-weight:800;font-size:22px;margin:14px 0 4px"></p><p id="bn" class="sub" style="margin:0 auto"></p></div></div></div></div></section>
+
+<section id="findings" style="padding-top:0"><div class="c"><h2>What we found</h2><p class="sub">Tested on 15 made-up candidate profiles and 302 real resume–job pairs.</p>
+<div class="stats">
+<div><b>15 of 15</b><span>short versions scored higher than the wordy version of the same person</span></div>
+<div><b>−91%</b><span>drop in word-matching score for one profile after rewording</span></div>
+<div><b>12%</b><span>of skills still found once they were written in long form</span></div>
+</div>
+<p class="sub" style="margin:22px 0 0">Meaning: scores can help a recruiter, but should never decide alone.</p></div></section>
+
+<footer><div class="c">SkillSignal · NLP project, CA3 · Profiles are fictional. Scores show word similarity, not hiring chances.</div></footer>
+
+<script>
+const $=s=>document.querySelector(s);
+$("#tg").onclick=()=>{const r=document.documentElement,d=getComputedStyle(r).getPropertyValue("--bg").trim()=="#0b1220";r.dataset.theme=d?"light":"dark"};
+const JOB="We are looking for a Business Analyst skilled in requirements gathering, stakeholder management, and process improvement. The candidate should be experienced with Agile methodology, strong in Excel, capable of producing clear documentation, and possess excellent communication skills. Data analysis experience is a plus.";
+const SHORT="Priya has hands-on professional experience with requirements gathering, stakeholder management, process improvement, agile, excel, documentation, communication, data analysis.";
+const LONG="Priya is a dedicated professional who developed strong capability in eliciting and formally capturing business needs from multiple departments; building strong working relationships with cross-functional partners and leadership; redesigning existing workflows to increase operational efficiency; working within iterative sprint-based delivery frameworks; advanced spreadsheet modeling and reporting tools; producing detailed functional specifications and user stories; clearly conveying complex findings to technical and non-technical audiences; interpreting large datasets to uncover actionable business insights.";
+const SK={"requirements gathering":["eliciting and formally capturing business needs"],"stakeholder management":["working relationships with cross-functional partners"],"process improvement":["redesigning existing workflows"],"agile":["iterative sprint-based delivery"],"excel":["spreadsheet modeling"],"documentation":["functional specifications","user stories"],"communication":["conveying complex findings"],"data analysis":["interpreting large datasets","actionable business insights"]};
+const SW=new Set("a an the and or of to in for with is are be as by on at from that this it its was were has have had who which over into more their they them such can will not also all any".split(" "));
+const clean=t=>t.toLowerCase().replace(/[^a-z0-9\s]/g," ").replace(/\s+/g," ").trim();
+function feats(t){const w=clean(t).split(" ").filter(x=>x&&!SW.has(x)),f={};w.forEach((x,i)=>{f[x]=(f[x]||0)+1;if(i<w.length-1){const b=x+" "+w[i+1];f[b]=(f[b]||0)+1}});return f}
+function score(job,res){const docs=[job,res,SHORT,LONG].map(feats),n=4,df={};docs.forEach(d=>Object.keys(d).forEach(k=>df[k]=(df[k]||0)+1));
+const vec=d=>{const v={};let s=0;for(const k in d){const x=(1+Math.log(d[k]))*(Math.log((1+n)/(1+df[k]))+1);v[k]=x;s+=x*x}s=Math.sqrt(s)||1;for(const k in v)v[k]/=s;return v};
+const a=vec(docs[0]),b=vec(docs[1]);let d=0;for(const k in a)if(b[k])d+=a[k]*b[k];return Math.round(Math.min(1,d/.36)*100)}
+const hs=score(JOB,SHORT),hl=score(JOB,LONG);
+$("#h1s").textContent=hs+" / 100";$("#h1b").style.width=hs+"%";$("#h2s").textContent=hl+" / 100";$("#h2b").style.width=Math.max(hl,3)+"%";
+$("#job").value=JOB;$("#res").value=SHORT;
+$("#e1").onclick=()=>{$("#res").value=SHORT;run()};$("#e2").onclick=()=>{$("#res").value=LONG;run()};
+function run(){const job=$("#job").value,res=$("#res").value,tx=clean(res),pct=score(job,res),ok=[],no=[],hid=[];
+Object.keys(SK).forEach(k=>{if(tx.includes(k))ok.push(k);else if(SK[k].some(a=>tx.includes(a)))hid.push(k);else no.push(k)});
+$("#out").classList.remove("hid");$("#sc").textContent=pct;$("#arc").style.strokeDashoffset=477.5*(1-pct/100);
+$("#say").textContent=pct>=60?"Strong match":pct>=30?"Medium match":"Low match";
+$("#ok").innerHTML=ok.map(k=>`<span class="chip ok">${k}</span>`).join("")||'<span class="chip">None found</span>';
+$("#no").innerHTML=no.concat(hid).map(k=>`<span class="chip">${k}</span>`).join("")||'<span class="chip">None, all skills found</span>';
+const w=$("#warn");if(hid.length){w.classList.remove("hid");w.innerHTML=`<b>Careful:</b> this resume does have ${hid.length} of these skills (${hid.join(", ")}), but written in long sentences. The AI could not see them, so the score is unfairly low.`}else w.classList.add("hid");HL(job,res)}
+$("#go").onclick=run;
+function HL(job,res){const jw=new Set(Object.keys(feats(job)).filter(k=>!k.includes(" ")));$("#hl").innerHTML=res.split(/(\s+)/).map(t=>{const e=t.replace(/&/g,"&amp;").replace(/</g,"&lt;"),k=clean(t);return k&&jw.has(k)?`<mark>${e}</mark>`:e}).join("")}
+const N=15,DD={t:[[.349,.211,.162,.234,.172,.170,.349,.250,.174,.152,.171,.206,.176,.129,.312],[.035,.026,.029,.027,.037,.021,.035,.025,.037,.017,.018,.032,.017,.031,.032]],e:[[.404,.409,.417,.434,.380,.462,.465,.414,.391,.459,.420,.439,.409,.408,.412],[.383,.324,.362,.337,.309,.366,.418,.322,.323,.316,.308,.330,.323,.319,.376]]};
+let LM="t",wd=Array(N).fill(false);
+const NM=["Aarav","Priya","Rohan","Ananya","Kabir","Meera","Arjun","Diya","Vikram","Isha","Nikhil","Sneha","Rahul","Tara","Aditya"],SKN=[8,4,4,3,3,3,8,4,3,4,3,5,3,3,8];
+$("#lb").innerHTML=Array.from({length:N},(_,i)=>`<div class="lr" data-i="${i}" role="button" tabindex="0" aria-label="Toggle wordy style for ${NM[i]}"><span class="rk"></span><span>${NM[i]} <small style="color:var(--mut);font-weight:400">${SKN[i]} skills</small></span><div class="tr"><b></b></div><span class="vl"></span></div>`).join("");
+function lbr(){const[c,v]=DD[LM],mx=LM=="t"?.36:.5,s=i=>wd[i]?v[i]:c[i],K=[...Array(N).keys()],br={},cr={};
+K.slice().sort((a,b)=>c[b]-c[a]||a-b).forEach((i,r)=>br[i]=r);K.slice().sort((a,b)=>s(b)-s(a)||a-b).forEach((i,r)=>cr[i]=r);
+let m=0;document.querySelectorAll(".lr").forEach(el=>{const i=+el.dataset.i,d=br[i]-cr[i];if(d)m++;el.style.transform=`translateY(${cr[i]*32}px)`;el.children[0].textContent=cr[i]+1;const b=el.querySelector("b");b.style.width=s(i)/mx*100+"%";b.style.background=wd[i]?"var(--bad)":"var(--ok)";el.children[3].innerHTML=s(i).toFixed(2)+(d?` <span style="color:var(--${d>0?"ok":"bad"})">${d>0?"▲":"▼"}${Math.abs(d)}</span>`:"")});
+$("#lbn").textContent=m?`${m} of 15 candidates changed rank. Same skills, only the wording changed.`:"Everyone is in short style. Tap a candidate, or press All wordy style."}
+document.querySelectorAll(".lr").forEach(el=>{const t=()=>{wd[+el.dataset.i]=!wd[+el.dataset.i];lbr()};el.onclick=t;el.onkeydown=e=>{if(e.key=="Enter"||e.key==" "){e.preventDefault();t()}}});
+document.querySelectorAll("[data-s]").forEach(b=>b.onclick=()=>{wd=Array(N).fill(b.dataset.s=="1");document.querySelectorAll("[data-s]").forEach(x=>x.classList.toggle("on",x==b));lbr()});
+document.querySelectorAll("[data-m]").forEach(b=>b.onclick=()=>{LM=b.dataset.m;document.querySelectorAll("[data-m]").forEach(x=>x.classList.toggle("on",x==b));lbr()});
+const VF={"requirements gathering":"eliciting and formally capturing business needs from multiple departments","stakeholder management":"building strong working relationships with cross-functional partners and leadership","process improvement":"redesigning existing workflows to increase operational efficiency","agile":"working within iterative sprint-based delivery frameworks","excel":"advanced spreadsheet modeling and reporting tools","documentation":"producing detailed functional specifications and user stories","communication":"clearly conveying complex findings to technical and non-technical audiences","data analysis":"interpreting large datasets to uncover actionable business insights"};
+let bsel=new Set(["agile","excel","documentation"]),bst=0;
+$("#bs").innerHTML=Object.keys(SK).map(k=>'<button class="pill'+(bsel.has(k)?' on':'')+'" data-k="'+k+'">'+k+'</button>').join("");
+function bld(){const ks=Object.keys(SK).filter(k=>bsel.has(k));
+const txt=ks.length?(bst?"Aarav is a dedicated professional who developed strong capability in "+ks.map(k=>VF[k]).join("; ")+".":"Aarav has hands-on professional experience with "+ks.join(", ")+"."):"Pick at least one skill.";
+$("#bt").textContent=txt;const sc=ks.length?score(JOB,txt):0,tx=clean(txt),seen=ks.filter(k=>tx.includes(k)).length;
+$("#bsc").textContent=sc;$("#barc").style.strokeDashoffset=477.5*(1-sc/100);
+$("#bv").textContent=ks.length?`AI sees ${seen} of ${ks.length} skills`:"";
+$("#bn").textContent=!ks.length?"":seen==ks.length?"Everything this person knows is visible to the AI.":"Same person, same skills. Only the writing style changed, and the AI missed them."}
+document.querySelectorAll("[data-k]").forEach(b=>b.onclick=()=>{const k=b.dataset.k;bsel.has(k)?bsel.delete(k):bsel.add(k);b.classList.toggle("on");bld()});
+document.querySelectorAll("[data-b]").forEach(b=>b.onclick=()=>{bst=+b.dataset.b;document.querySelectorAll("[data-b]").forEach(x=>x.classList.toggle("on",x==b));bld()});
+lbr();run();bld();
+if(!matchMedia("(prefers-reduced-motion:reduce)").matches){const io=new IntersectionObserver(es=>es.forEach(e=>{if(!e.isIntersecting)return;io.unobserve(e.target);const m=e.target.textContent.match(/^(\D*)(\d+)(.*)$/);if(!m)return;const n=+m[2],t0=performance.now();(function f(t){const p=Math.min(1,(t-t0)/1200);e.target.textContent=m[1]+Math.round(n*(1-Math.pow(1-p,3)))+m[3];if(p<1)requestAnimationFrame(f)})(t0)}),{threshold:.6});document.querySelectorAll(".stats b").forEach(b=>io.observe(b))}
+</script></body></html>
